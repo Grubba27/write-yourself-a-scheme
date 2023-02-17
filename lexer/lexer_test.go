@@ -91,11 +91,11 @@ func Test_getIdentifierToken(t *testing.T) {
 func Test_Lexer(t *testing.T) {
 	tests := []struct {
 		source string
-		tokens []token
+		tokens []Token
 	}{
 		{
 			" ( add 13 2 )",
-			[]token{
+			[]Token{
 				{
 					value:    "(",
 					kind:     syntaxToken,

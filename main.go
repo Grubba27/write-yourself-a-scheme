@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"write-yourself-a-scheme/lexer"
+	l "write-yourself-a-scheme/lexer"
 )
 
 func main() {
@@ -11,6 +11,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	tokens := lexer.Lex(string(app))
+	tokens := l.Lex(string(app))
 	fmt.Println(tokens)
 }

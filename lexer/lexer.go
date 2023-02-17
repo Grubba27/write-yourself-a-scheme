@@ -13,17 +13,17 @@ const (
 	identifierToken
 )
 
-type token struct {
+type Token struct {
 	value    string
 	kind     tokenKind
 	location int
 }
 
-func (t token) debug(source []rune) {
+func (t Token) debug(source []rune) {
 	// debug
 }
 
-func getIdentifierToken(source []rune, cursor int) (int, *token) {
+func getIdentifierToken(source []rune, cursor int) (int, *Token) {
 	originalCursor := cursor
 	var acc []rune
 	for cursor < len(source) {
@@ -40,7 +40,7 @@ func getIdentifierToken(source []rune, cursor int) (int, *token) {
 		return originalCursor, nil
 	}
 
-	return cursor, &token{
+	return cursor, &Token{
 		value:    string(acc),
 		kind:     identifierToken,
 		location: originalCursor,
@@ -48,7 +48,7 @@ func getIdentifierToken(source []rune, cursor int) (int, *token) {
 
 }
 
-func getIntegerToken(source []rune, cursor int) (int, *token) {
+func getIntegerToken(source []rune, cursor int) (int, *Token) {
 	originalCursor := cursor
 	var acc []rune
 	for cursor < len(source) {
@@ -64,16 +64,16 @@ func getIntegerToken(source []rune, cursor int) (int, *token) {
 		return originalCursor, nil
 	}
 
-	return cursor, &token{
+	return cursor, &Token{
 		value:    string(acc),
 		kind:     integerToken,
 		location: originalCursor,
 	}
 
 }
-func getSyntaxToken(source []rune, cursor int) (int, *token) {
+func getSyntaxToken(source []rune, cursor int) (int, *Token) {
 	if source[cursor] == '(' || source[cursor] == ')' {
-		return cursor + 1, &token{
+		return cursor + 1, &Token{
 			value:    string([]rune{source[cursor]}),
 			kind:     syntaxToken,
 			location: cursor,
@@ -93,10 +93,10 @@ func eatWhitespace(source []rune, cursor int) int {
 	return cursor
 }
 
-func Lex(raw string) []token {
+func Lex(raw string) []Token {
 	source := []rune(raw)
-	var tokens []token
-	var t *token
+	var tokens []Token
+	var t *Token
 	cursor := 0
 	for cursor < len(source) {
 		cursor = eatWhitespace(source, cursor)
