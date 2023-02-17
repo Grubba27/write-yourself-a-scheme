@@ -39,12 +39,12 @@ func Test_getIntegerToken(t *testing.T) {
 				" actual number (%d)", cursor, test.expectedCursor)
 		}
 
-		if token.value != test.expectedValue {
+		if token.Value != test.expectedValue {
 			t.Errorf("Expected value(%s) is not same as"+
-				" actual number (%s)", token.value, test.expectedValue)
+				" actual number (%s)", token.Value, test.expectedValue)
 		}
 
-		if token.kind != integerToken {
+		if token.Kind != integerToken {
 			t.Errorf("Expected interger token in test number: %d", i)
 		}
 	}
@@ -77,12 +77,12 @@ func Test_getIdentifierToken(t *testing.T) {
 				" actual number (%d)", cursor, test.expectedCursor)
 		}
 
-		if token.value != test.expectedValue {
+		if token.Value != test.expectedValue {
 			t.Errorf("Expected value(%s) is not same as"+
-				" actual number (%s)", token.value, test.expectedValue)
+				" actual number (%s)", token.Value, test.expectedValue)
 		}
 
-		if token.kind != identifierToken {
+		if token.Kind != identifierToken {
 			t.Errorf("Expected interger token in test number: %d", i)
 		}
 	}
@@ -97,30 +97,30 @@ func Test_Lexer(t *testing.T) {
 			" ( add 13 2 )",
 			[]Token{
 				{
-					value:    "(",
-					kind:     syntaxToken,
-					location: 1,
+					Value:    "(",
+					Kind:     SyntaxToken,
+					Location: 1,
 				},
 				{
-					value:    "add",
-					kind:     identifierToken,
-					location: 3,
+					Value:    "add",
+					Kind:     identifierToken,
+					Location: 3,
 				},
 				{
-					value:    "13",
-					kind:     integerToken,
-					location: 7,
+					Value:    "13",
+					Kind:     integerToken,
+					Location: 7,
 				},
 
 				{
-					value:    "2",
-					kind:     integerToken,
-					location: 10,
+					Value:    "2",
+					Kind:     integerToken,
+					Location: 10,
 				},
 				{
-					value:    ")",
-					kind:     syntaxToken,
-					location: 12,
+					Value:    ")",
+					Kind:     SyntaxToken,
+					Location: 12,
 				},
 			},
 		},
