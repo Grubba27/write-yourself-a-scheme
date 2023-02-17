@@ -11,6 +11,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	tokens := lexer.Lexer(string(app))
+	tokens := lexer.Lex(string(app))
 	fmt.Println(tokens)
 }

@@ -127,7 +127,7 @@ func Test_Lexer(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tokens := Lexer(test.source)
+		tokens := Lex(test.source)
 
 		if !reflect.DeepEqual(test.tokens, tokens) {
 			fmt.Printf("expected: %#v \n", test.tokens)

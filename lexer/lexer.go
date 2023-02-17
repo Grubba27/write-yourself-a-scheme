@@ -93,7 +93,7 @@ func eatWhitespace(source []rune, cursor int) int {
 	return cursor
 }
 
-func Lexer(raw string) []token {
+func Lex(raw string) []token {
 	source := []rune(raw)
 	var tokens []token
 	var t *token
