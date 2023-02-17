@@ -22,12 +22,12 @@ func (v value) pretty() string {
 	if v.kind == literalKind {
 		return v.literal.Value
 	}
-	return v.list.pretty()
+	return v.list.Pretty()
 }
 
 type Ast []value
 
-func (ast Ast) pretty() string {
+func (ast Ast) Pretty() string {
 	p := "("
 	for _, value := range ast {
 		p += value.pretty()
@@ -36,7 +36,37 @@ func (ast Ast) pretty() string {
 	return p + ")"
 }
 
-func parse(tokens []l.Token, index int) (Ast, int) {
+// Parse for example: "(+ 13 (- 12 1)"
+// Parse(["(", "+", "13", "(", "-", "12", "1", ")", ")"]):
+//
+//	should produce: ast{
+//	  value{
+//	    kind: literal,
+//	    literal: "+",
+//	  },
+//	  value{
+//	    kind: literal,
+//	    literal: "13",
+//	  },
+//	  value{
+//	    kind: list,
+//	    list: ast {
+//	      value {
+//	        kind: literal,
+//	        literal: "-",
+//	      },
+//	      value {
+//	        kind: literal,
+//	        literal: "12",
+//	      },
+//	      value {
+//	        kind: literal,
+//	        literal: "1",
+//	      },
+//	    }
+//	  }
+//	}
+func Parse(tokens []l.Token, index int) (Ast, int) {
 	var a Ast
 
 	token := tokens[index]
@@ -49,7 +79,7 @@ func parse(tokens []l.Token, index int) (Ast, int) {
 	for index < len(tokens) {
 		token := tokens[index]
 		if token.Kind == l.SyntaxToken && token.Value == "(" {
-			child, next := parse(tokens, index)
+			child, next := Parse(tokens, index)
 			a = append(a, value{
 				kind: listKind,
 				list: &child,

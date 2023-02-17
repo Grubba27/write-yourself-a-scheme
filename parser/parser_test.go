@@ -182,15 +182,15 @@ func Test_parse(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := lexer.Lex(test.input)
-		ast, _ := parse(tokens, 0)
-		if ast.pretty() != test.prettyOutput {
+		ast, _ := Parse(tokens, 0)
+		if ast.Pretty() != test.prettyOutput {
 			fmt.Printf("expected: %s \n", test.prettyOutput)
-			fmt.Printf("got: %s \n", ast.pretty())
+			fmt.Printf("got: %s \n", ast.Pretty())
 			t.Errorf("Something is wrong with the parser")
 		}
 		if !compareAst(test.output, ast) {
 			fmt.Printf("expected: %s \n", test.prettyOutput)
-			fmt.Printf("got: %s \n", ast.pretty())
+			fmt.Printf("got: %s \n", ast.Pretty())
 			t.Errorf("Something is wrong with the parser")
 		}
 	}

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	l "write-yourself-a-scheme/lexer"
+	"write-yourself-a-scheme/parser"
 )
 
 func main() {
@@ -12,5 +12,7 @@ func main() {
 		panic(err)
 	}
 	tokens := l.Lex(string(app))
-	fmt.Println(tokens)
+
+	ast, _ := parser.Parse(tokens, 0)
+	println(ast.Pretty())
 }
