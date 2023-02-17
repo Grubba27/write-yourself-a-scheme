@@ -1,6 +1,9 @@
 package parser
 
-import l "write-yourself-a-scheme/lexer"
+import (
+	"os"
+	l "write-yourself-a-scheme/lexer"
+)
 
 type valueKind uint
 
@@ -12,37 +15,64 @@ const (
 type value struct {
 	kind    valueKind
 	literal *l.Token
-	list    Ast
+	list    *Ast
+}
+
+func (v value) pretty() string {
+	if v.kind == literalKind {
+		return v.literal.Value
+	}
+	return v.list.pretty()
 }
 
 type Ast []value
 
+func (ast Ast) pretty() string {
+	p := "("
+	for _, value := range ast {
+		p += value.pretty()
+		p += " "
+	}
+	return p + ")"
+}
+
 func parse(tokens []l.Token, index int) (Ast, int) {
-	var ast Ast
+	var a Ast
+
+	token := tokens[index]
+	if !(token.Kind == l.SyntaxToken && token.Value == "(") {
+		panic("Should be an open paran")
+	}
+
+	index++
 
 	for index < len(tokens) {
 		token := tokens[index]
-
 		if token.Kind == l.SyntaxToken && token.Value == "(" {
-			child, next := parse(tokens, index+1)
-			ast = append(ast, value{
+			child, next := parse(tokens, index)
+			a = append(a, value{
 				kind: listKind,
-				list: child,
+				list: &child,
 			})
 			index = next
 			continue
 		}
 
 		if token.Kind == l.SyntaxToken && token.Value == ")" {
-			return ast, index + 1
+			return a, index + 1
 		}
 
-		ast = append(ast, value{
+		a = append(a, value{
 			kind:    literalKind,
 			literal: &token,
 		})
 		index++
 	}
 
-	return ast, index
+	if tokens[index-1].Kind == l.SyntaxToken &&
+		tokens[index-1].Value != ")" {
+		os.Exit(1)
+	}
+
+	return a, index
 }
