@@ -44,7 +44,7 @@ func Test_getIntegerToken(t *testing.T) {
 				" actual number (%s)", token.Value, test.expectedValue)
 		}
 
-		if token.Kind != integerToken {
+		if token.Kind != IntegerToken {
 			t.Errorf("Expected interger token in test number: %d", i)
 		}
 	}
@@ -82,7 +82,7 @@ func Test_getIdentifierToken(t *testing.T) {
 				" actual number (%s)", token.Value, test.expectedValue)
 		}
 
-		if token.Kind != identifierToken {
+		if token.Kind != IdentifierToken {
 			t.Errorf("Expected interger token in test number: %d", i)
 		}
 	}
@@ -103,18 +103,18 @@ func Test_Lexer(t *testing.T) {
 				},
 				{
 					Value:    "add",
-					Kind:     identifierToken,
+					Kind:     IdentifierToken,
 					Location: 3,
 				},
 				{
 					Value:    "13",
-					Kind:     integerToken,
+					Kind:     IntegerToken,
 					Location: 7,
 				},
 
 				{
 					Value:    "2",
-					Kind:     integerToken,
+					Kind:     IntegerToken,
 					Location: 10,
 				},
 				{

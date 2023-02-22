@@ -1,20 +1,25 @@
 package walker
 
-import "write-yourself-a-scheme/parser"
+import (
+	"fmt"
+	"strconv"
+	"write-yourself-a-scheme/lexer"
+	"write-yourself-a-scheme/parser"
+)
 
 var builtins = map[string]func(value []parser.Value, ctx map[string]any) any{}
 
 func Initialize() {
 
 	builtins["if"] = func(args []parser.Value, ctx map[string]any) any {
-		condition := EvaluateValue(args[0], ctx)
+		condition := AstWalk(args[0], ctx)
 		then := args[1]
 		else_ := args[2]
 
 		if condition.(bool) == true {
-			return EvaluateValue(then, ctx)
+			return AstWalk(then, ctx)
 		} else {
-			return EvaluateValue(else_, ctx)
+			return AstWalk(else_, ctx)
 		}
 	}
 
@@ -26,46 +31,60 @@ func Initialize() {
 
 	// Math
 	builtins["+"] = func(args []parser.Value, ctx map[string]any) any {
-		var i int
-		for _, arg := range args {
-			i += EvaluateValue(arg, ctx).(int)
+		i := AstWalk(args[0], ctx).(int64)
+		for _, arg := range args[1:] {
+			i += AstWalk(arg, ctx).(int64)
 		}
 		return i
 	}
 	builtins["-"] = func(args []parser.Value, ctx map[string]any) any {
-		var i int
-		for _, arg := range args {
-			i -= EvaluateValue(arg, ctx).(int)
+		i := AstWalk(args[0], ctx).(int64)
+		for _, arg := range args[1:] {
+			i -= AstWalk(arg, ctx).(int64)
 		}
 		return i
 	}
 	builtins["*"] = func(args []parser.Value, ctx map[string]any) any {
-		var i int
-		for _, arg := range args {
-			i *= EvaluateValue(arg, ctx).(int)
+		i := AstWalk(args[0], ctx).(int64)
+
+		for _, arg := range args[1:] {
+			i *= AstWalk(arg, ctx).(int64)
 		}
 		return i
 	}
 	builtins["/"] = func(args []parser.Value, ctx map[string]any) any {
-		var i int
-		for _, arg := range args {
-			i /= EvaluateValue(arg, ctx).(int)
+		i := AstWalk(args[0], ctx).(int64)
+		for _, arg := range args[1:] {
+			i /= AstWalk(arg, ctx).(int64)
 		}
 		return i
 	}
 
 }
-
-func EvaluateValue(v parser.Value, ctx map[string]any) any {
+func AstWalk(v parser.Value, ctx map[string]any) any {
 	if v.Kind == parser.LiteralKind {
-		r := *v.Literal
-		println(r.Value)
-		return r.Value
-	}
+		t := *v.Literal
+		switch t.Kind {
 
-	fnName := (*(*v.List)[0].Literal).Value
+		case lexer.IntegerToken:
+			i, err := strconv.ParseInt(t.Value, 10, 64)
+			if err != nil {
+				fmt.Println("Expected an int but received: ", t.Value)
+				panic(err)
+			}
+			return i
+
+		case lexer.IdentifierToken:
+			return t.Value
+		}
+	}
+	return EvaluateValue(*v.List, ctx)
+}
+func EvaluateValue(ast []parser.Value, ctx map[string]any) any {
+	fnName := (*ast[0].Literal).Value
 	if fn, ok := builtins[fnName]; ok {
-		return fn((*v.List)[1:], ctx)
+		result := fn(ast[1:], ctx)
+		return result
 	}
 	panic("whaat, not yet implemented")
 	//fn := ctx[fnName]

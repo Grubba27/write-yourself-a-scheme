@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	l "write-yourself-a-scheme/lexer"
 	"write-yourself-a-scheme/parser"
@@ -16,8 +17,8 @@ func main() {
 
 	ast, _ := parser.Parse(tokens, 0)
 	ctx := map[string]any{}
-	println(ast.Pretty())
 	walker.Initialize()
-	value := walker.EvaluateValue(ast[0], ctx)
-	println(value)
+	value := walker.EvaluateValue(ast, ctx)
+	fmt.Println(ast.Pretty())
+	fmt.Println(value)
 }

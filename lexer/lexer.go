@@ -8,9 +8,9 @@ const (
 	// LPAREN RPAREN
 	SyntaxToken tokenKind = iota
 	// numbers
-	integerToken
+	IntegerToken
 	// + , fn
-	identifierToken
+	IdentifierToken
 )
 
 type Token struct {
@@ -41,7 +41,7 @@ func getIdentifierToken(source []rune, cursor int) (int, *Token) {
 
 	return cursor, &Token{
 		Value:    string(acc),
-		Kind:     identifierToken,
+		Kind:     IdentifierToken,
 		Location: originalCursor,
 	}
 
@@ -65,7 +65,7 @@ func getIntegerToken(source []rune, cursor int) (int, *Token) {
 
 	return cursor, &Token{
 		Value:    string(acc),
-		Kind:     integerToken,
+		Kind:     IntegerToken,
 		Location: originalCursor,
 	}
 
