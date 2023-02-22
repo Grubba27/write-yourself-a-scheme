@@ -8,24 +8,24 @@ import (
 type valueKind uint
 
 const (
-	literalKind valueKind = iota
-	listKind
+	LiteralKind valueKind = iota
+	ListKind
 )
 
-type value struct {
-	kind    valueKind
-	literal *l.Token
-	list    *Ast
+type Value struct {
+	Kind    valueKind
+	Literal *l.Token
+	List    *Ast
 }
 
-func (v value) pretty() string {
-	if v.kind == literalKind {
-		return v.literal.Value
+func (v Value) pretty() string {
+	if v.Kind == LiteralKind {
+		return v.Literal.Value
 	}
-	return v.list.Pretty()
+	return v.List.Pretty()
 }
 
-type Ast []value
+type Ast []Value
 
 func (ast Ast) Pretty() string {
 	p := "("
@@ -41,27 +41,27 @@ func (ast Ast) Pretty() string {
 //
 //	should produce: ast{
 //	  value{
-//	    kind: literal,
-//	    literal: "+",
+//	    kind: Literal,
+//	    Literal: "+",
 //	  },
 //	  value{
-//	    kind: literal,
-//	    literal: "13",
+//	    kind: Literal,
+//	    Literal: "13",
 //	  },
 //	  value{
-//	    kind: list,
-//	    list: ast {
+//	    kind: List,
+//	    List: ast {
 //	      value {
-//	        kind: literal,
-//	        literal: "-",
+//	        kind: Literal,
+//	        Literal: "-",
 //	      },
 //	      value {
-//	        kind: literal,
-//	        literal: "12",
+//	        kind: Literal,
+//	        Literal: "12",
 //	      },
 //	      value {
-//	        kind: literal,
-//	        literal: "1",
+//	        kind: Literal,
+//	        Literal: "1",
 //	      },
 //	    }
 //	  }
@@ -80,9 +80,9 @@ func Parse(tokens []l.Token, index int) (Ast, int) {
 		token := tokens[index]
 		if token.Kind == l.SyntaxToken && token.Value == "(" {
 			child, next := Parse(tokens, index)
-			a = append(a, value{
-				kind: listKind,
-				list: &child,
+			a = append(a, Value{
+				Kind: ListKind,
+				List: &child,
 			})
 			index = next
 			continue
@@ -92,9 +92,9 @@ func Parse(tokens []l.Token, index int) (Ast, int) {
 			return a, index + 1
 		}
 
-		a = append(a, value{
-			kind:    literalKind,
-			literal: &token,
+		a = append(a, Value{
+			Kind:    LiteralKind,
+			Literal: &token,
 		})
 		index++
 	}

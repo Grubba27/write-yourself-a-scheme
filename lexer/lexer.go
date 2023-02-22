@@ -28,12 +28,11 @@ func getIdentifierToken(source []rune, cursor int) (int, *Token) {
 	var acc []rune
 	for cursor < len(source) {
 		r := source[cursor]
-		if !unicode.IsSpace(r) {
-			cursor++
-			acc = append(acc, r)
-			continue
+		if unicode.IsSpace(r) {
+			break
 		}
-		break
+		cursor++
+		acc = append(acc, r)
 
 	}
 	if len(acc) == 0 {
@@ -84,11 +83,10 @@ func getSyntaxToken(source []rune, cursor int) (int, *Token) {
 
 func eatWhitespace(source []rune, cursor int) int {
 	for cursor < len(source) {
-		if unicode.IsSpace(source[cursor]) {
-			cursor++
-			continue
+		if !unicode.IsSpace(source[cursor]) {
+			break
 		}
-		break
+		cursor++
 	}
 	return cursor
 }

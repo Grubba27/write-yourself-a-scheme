@@ -1,3 +1,4 @@
+# Write your own Scheme interpreter in Go
 
 This is a Repo that was build alongside [eatonphil](twitch.tv/eatonphil) from the twitch stream.
 
@@ -8,7 +9,7 @@ This is a Repo that was build alongside [eatonphil](twitch.tv/eatonphil) from th
 
 Give him a star on the original [repo](https://github.com/eatonphil/livescheme) and follow him on twitch if you like the content. 
 
-```
+```bash
 $ go mod tidy
 $ go test
 $ go build
@@ -23,3 +24,9 @@ $ ./livescheme examples/fib.scm
 89
 
 ```
+
+## Missing features
+
+- [ ] Constant propagation
+- [ ] More keywords
+- [ ] Types(static type checking) 

@@ -6,23 +6,23 @@ import (
 	"write-yourself-a-scheme/lexer"
 )
 
-func areEqual(expected, got value) bool {
-	if expected.kind != got.kind {
-		println("Kinds are not equal", expected.kind, got.kind)
+func areEqual(expected, got Value) bool {
+	if expected.Kind != got.Kind {
+		println("Kinds are not equal", expected.Kind, got.Kind)
 		return false
 	}
 
-	if expected.kind == literalKind {
-		if expected.literal.Value != got.literal.Value {
-			fmt.Println("Literals not equal", expected.literal, got.literal)
+	if expected.Kind == LiteralKind {
+		if expected.Literal.Value != got.Literal.Value {
+			fmt.Println("Literals not equal", expected.Literal, got.Literal)
 			return false
 		}
 
 		return true
 	}
 
-	// is a list so recurse :)
-	return compareAst(*expected.list, *got.list)
+	// is a List so recurse :)
+	return compareAst(*expected.List, *got.List)
 }
 func compareAst(expected, got Ast) bool {
 	if len(expected) != len(got) {
@@ -50,17 +50,17 @@ func Test_parse(t *testing.T) {
 			"(+ 1 2)",
 			"(+ 1 2 )",
 			Ast{
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "+"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "+"},
 				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "1"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "1"},
 				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "2"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "2"},
 				},
 			},
 		},
@@ -68,28 +68,28 @@ func Test_parse(t *testing.T) {
 			"(+ 1 (- 12 9))",
 			"(+ 1 (- 12 9 ) )",
 			Ast{
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "+"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "+"},
 				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "1"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "1"},
 				},
-				value{
-					kind: listKind,
-					list: &Ast{
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "-"},
+				Value{
+					Kind: ListKind,
+					List: &Ast{
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "-"},
 						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "12"},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "12"},
 						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "9"},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "9"},
 						},
 					},
 				},
@@ -99,34 +99,34 @@ func Test_parse(t *testing.T) {
 			"(+ 1 (- 12 9) 12)",
 			"(+ 1 (- 12 9 ) 12 )",
 			Ast{
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "+"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "+"},
 				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "1"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "1"},
 				},
-				value{
-					kind: listKind,
-					list: &Ast{
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "-"},
+				Value{
+					Kind: ListKind,
+					List: &Ast{
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "-"},
 						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "12"},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "12"},
 						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "9"},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "9"},
 						},
 					},
 				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "12"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "12"},
 				},
 			},
 		},
@@ -134,47 +134,47 @@ func Test_parse(t *testing.T) {
 			"((+ 1 2) 1 (- 12 9) 12)",
 			"((+ 1 2 ) 1 (- 12 9 ) 12 )",
 			Ast{
-				value{
-					kind: listKind,
-					list: &Ast{
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "+"},
+				Value{
+					Kind: ListKind,
+					List: &Ast{
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "+"},
 						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "1"},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "1"},
 						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "2"},
-						},
-					},
-				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "1"},
-				},
-				value{
-					kind: listKind,
-					list: &Ast{
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "-"},
-						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "12"},
-						},
-						value{
-							kind:    literalKind,
-							literal: &lexer.Token{Value: "9"},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "2"},
 						},
 					},
 				},
-				value{
-					kind:    literalKind,
-					literal: &lexer.Token{Value: "12"},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "1"},
+				},
+				Value{
+					Kind: ListKind,
+					List: &Ast{
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "-"},
+						},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "12"},
+						},
+						Value{
+							Kind:    LiteralKind,
+							Literal: &lexer.Token{Value: "9"},
+						},
+					},
+				},
+				Value{
+					Kind:    LiteralKind,
+					Literal: &lexer.Token{Value: "12"},
 				},
 			},
 		},
