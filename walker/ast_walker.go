@@ -2,6 +2,7 @@ package walker
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"write-yourself-a-scheme/lexer"
 	"write-yourself-a-scheme/parser"
@@ -31,11 +32,37 @@ func Initialize() {
 		}
 	}
 
+	builtins["len"] = func(args []parser.Value, ctx map[string]any) any {
+		return len(*args[0].List)
+	}
+
+	builtins["head"] = func(args []parser.Value, ctx map[string]any) any {
+		list := *args[0].List
+		return list[0].Literal.Value
+	}
+
+	builtins["tail"] = func(args []parser.Value, ctx map[string]any) any {
+		rest := (*args[0].List)[1:]
+		return rest
+	}
+
+	builtins["list"] = func(args []parser.Value, ctx map[string]any) any {
+		return *args[0].List
+	}
+
 	//"fold": func(args []parser.Value, ctx map[string]any) any {
 	//	fn := Evaluate(args[0], ctx)
 	//	init := Evaluate(args[1], ctx)
 	//	return nil
 	//},
+
+	builtins["<"] = func(args []parser.Value, ctx map[string]any) any {
+		return AstWalk(args[0], ctx).(int64) < AstWalk(args[1], ctx).(int64)
+	}
+
+	builtins[">"] = func(args []parser.Value, ctx map[string]any) any {
+		return AstWalk(args[0], ctx).(int64) > AstWalk(args[1], ctx).(int64)
+	}
 
 	builtins["begin"] = func(args []parser.Value, ctx map[string]any) any {
 		var last any
@@ -133,13 +160,20 @@ func EvaluateValue(ast []parser.Value, ctx map[string]any) any {
 		return builtInFn(ast[1:], ctx)
 	}
 
-	userFn := ctx[fnName].(func([]any, map[string]any) any)
-
-	var args []any
-	for _, uArgs := range ast[1:] {
-		args = append(args, AstWalk(uArgs, ctx))
+	// Case: calling a function that is not built in
+	maybeFunction, ok := ctx[fnName]
+	if !ok {
+		(*ast[0].Literal).Debug(fmt.Sprintf("Expected function, got %s", fnName))
+		os.Exit(1)
 	}
-	res := userFn(args, ctx)
+	userDefinedFunction := maybeFunction.(func([]any, map[string]any) any)
 
-	return res
+	// Do we evaluate args here?
+	// If so, special functions like `if` must be handled separately
+	var args []any
+	for _, unevaluatedArg := range ast[1:] {
+		args = append(args, AstWalk(unevaluatedArg, ctx))
+	}
+
+	return userDefinedFunction(args, ctx)
 }

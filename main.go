@@ -9,11 +9,15 @@ import (
 )
 
 func main() {
-	app, err := os.ReadFile(os.Args[1])
-	if err != nil {
-		panic(err)
+	lc := l.New(os.Args[1])
+
+	tokens := lc.Lex()
+	debug := false
+	if debug {
+		for _, token := range tokens {
+			fmt.Println(token.Value)
+		}
 	}
-	tokens := l.Lex(string(app))
 
 	var parserIndex int
 	ast := parser.Ast{
@@ -34,6 +38,7 @@ func main() {
 		})
 		parserIndex = next
 	}
+
 	ctx := map[string]any{}
 	walker.Initialize()
 	value := walker.EvaluateValue(ast, ctx)
