@@ -28,12 +28,11 @@ func getIdentifierToken(source []rune, cursor int) (int, *Token) {
 	var acc []rune
 	for cursor < len(source) {
 		r := source[cursor]
-		if unicode.IsSpace(r) {
+		if unicode.IsSpace(r) || r == ')' {
 			break
 		}
 		cursor++
 		acc = append(acc, r)
-
 	}
 	if len(acc) == 0 {
 		return originalCursor, nil

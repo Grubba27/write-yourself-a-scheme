@@ -9,6 +9,14 @@ import (
 
 var builtins = map[string]func(value []parser.Value, ctx map[string]any) any{}
 
+func copyContext(in map[string]any) map[string]any {
+	out := map[string]any{}
+	for k, v := range in {
+		out[k] = v
+	}
+	return out
+}
+
 func Initialize() {
 
 	builtins["if"] = func(args []parser.Value, ctx map[string]any) any {
@@ -28,6 +36,44 @@ func Initialize() {
 	//	init := Evaluate(args[1], ctx)
 	//	return nil
 	//},
+
+	builtins["begin"] = func(args []parser.Value, ctx map[string]any) any {
+		var last any
+		for _, arg := range args {
+			last = AstWalk(arg, ctx)
+		}
+		return last
+
+	}
+
+	builtins["let"] = func(args []parser.Value, ctx map[string]any) any {
+		literalName := (*args[0].Literal).Value
+		literal := (*args[1].Literal).Value
+		ctx[literalName] = func(args []any, ctx map[string]any) any {
+			innerCtx := copyContext(ctx)
+			innerCtx[literalName] = literal
+			return literal
+		}
+
+		return ctx[literalName]
+	}
+
+	builtins["fn"] = func(args []parser.Value, ctx map[string]any) any {
+		fnName := (*args[0].Literal).Value
+		params := *args[1].List
+		body := *args[2].List
+		ctx[fnName] = func(args []any, ctx map[string]any) any {
+			innerCtx := copyContext(ctx)
+			if len(params) != len(args) {
+				panic(fmt.Sprintf("Expected %d args to `%s`, got %d", len(params), fnName, len(args)))
+			}
+			for i, param := range params {
+				innerCtx[(*param.Literal).Value] = args[i]
+			}
+			return EvaluateValue(body, innerCtx)
+		}
+		return ctx[fnName]
+	}
 
 	// Math
 	builtins["+"] = func(args []parser.Value, ctx map[string]any) any {
@@ -61,6 +107,7 @@ func Initialize() {
 	}
 
 }
+
 func AstWalk(v parser.Value, ctx map[string]any) any {
 	if v.Kind == parser.LiteralKind {
 		t := *v.Literal
@@ -75,24 +122,24 @@ func AstWalk(v parser.Value, ctx map[string]any) any {
 			return i
 
 		case lexer.IdentifierToken:
-			return t.Value
+			return ctx[t.Value]
 		}
 	}
 	return EvaluateValue(*v.List, ctx)
 }
 func EvaluateValue(ast []parser.Value, ctx map[string]any) any {
 	fnName := (*ast[0].Literal).Value
-	if fn, ok := builtins[fnName]; ok {
-		result := fn(ast[1:], ctx)
-		return result
+	if builtInFn, ok := builtins[fnName]; ok {
+		return builtInFn(ast[1:], ctx)
 	}
-	panic("whaat, not yet implemented")
-	//fn := ctx[fnName]
-	//
-	//var args []any
-	//for _, uArgs := range (*v.List)[1:] {
-	//	args = append(args, Evaluate(uArgs, ctx))
-	//}
-	//return fn(args)
-	return nil
+
+	userFn := ctx[fnName].(func([]any, map[string]any) any)
+
+	var args []any
+	for _, uArgs := range ast[1:] {
+		args = append(args, AstWalk(uArgs, ctx))
+	}
+	res := userFn(args, ctx)
+
+	return res
 }

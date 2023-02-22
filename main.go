@@ -15,7 +15,25 @@ func main() {
 	}
 	tokens := l.Lex(string(app))
 
-	ast, _ := parser.Parse(tokens, 0)
+	var parserIndex int
+	ast := parser.Ast{
+		parser.Value{
+			Kind: parser.LiteralKind,
+			Literal: &l.Token{
+				Value: "begin",
+				Kind:  l.IdentifierToken,
+			},
+		},
+	}
+
+	for parserIndex < len(tokens) {
+		childAst, next := parser.Parse(tokens, parserIndex)
+		ast = append(ast, parser.Value{
+			Kind: parser.ListKind,
+			List: &childAst,
+		})
+		parserIndex = next
+	}
 	ctx := map[string]any{}
 	walker.Initialize()
 	value := walker.EvaluateValue(ast, ctx)
