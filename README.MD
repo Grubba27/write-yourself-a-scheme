@@ -1,6 +1,6 @@
 # Write your own Scheme interpreter in Go
 
-This is a Repo that was build alongside [eatonphil](twitch.tv/eatonphil) from the twitch stream.
+This is a Repo that was build alongside [eatonphil](https://www.twitch.tv/eatonphil) from the twitch stream.
 
 [Part 1: A lexer](https://www.youtube.com/watch?v=lZNhZI-dN9k)
 [Part 2: Parsing](https://www.youtube.com/watch?v=5ttFEPQopXc)
